@@ -1,6 +1,5 @@
 import { Todo } from "@prisma/client";
 
-
 const sleep = (seconds: number = 0): Promise<boolean> => {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -8,9 +7,6 @@ const sleep = (seconds: number = 0): Promise<boolean> => {
     }, seconds * 1000);
   })
 }
-
-
-
 
 export const updateTodo = async (id: string, complete: boolean): Promise<Todo> => {
 
@@ -22,16 +18,11 @@ export const updateTodo = async (id: string, complete: boolean): Promise<Todo> =
   const todo = await fetch(`/api/todos/${id}`, {
     method: 'PUT',
     body: JSON.stringify(body),
-    headers: {
-      'Content-Type': 'application/json'
-    }
+    headers: { 'Content-Type': 'application/json' }
   }).then(res => res.json());
-
-  console.log({ todo });
 
   return todo;
 }
-
 
 export const createTodo = async (description: string): Promise<Todo> => {
 
@@ -45,13 +36,10 @@ export const createTodo = async (description: string): Promise<Todo> => {
     }
   }).then(res => res.json());
 
-  console.log({ todo });
-
   return todo;
 }
 
 export const deleteCompletedTodos = async (): Promise<boolean> => {
-
 
   await fetch('/api/todos', {
     method: 'DELETE',
@@ -59,7 +47,6 @@ export const deleteCompletedTodos = async (): Promise<boolean> => {
       'Content-Type': 'application/json'
     }
   }).then(res => res.json());
-
 
   return true;
 }
