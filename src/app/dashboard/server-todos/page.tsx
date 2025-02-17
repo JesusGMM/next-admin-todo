@@ -1,10 +1,11 @@
+import { redirect } from "next/navigation";
+import prisma from "@/lib/prisma";
+
+import { NewTodo, TodosGrid } from "@/todos";
+import { getUserSessionServer } from "@/auth/actions/auth-actions";
+
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
-
-
-
-import prisma from "@/lib/prisma";
-import { NewTodo, TodosGrid } from "@/todos";
 
 export const metadata = {
   title: 'Listado de Todos',
@@ -14,8 +15,16 @@ export const metadata = {
 
 export default async function ServerTodosPage() {
 
-  const todos = await prisma.todo.findMany({ orderBy: { description: 'asc' } });
-  console.log('construido');
+  const user = await getUserSessionServer();
+  if (!user) redirect('/api/auth/signin');
+
+  const todos = await prisma.todo.findMany({
+    where: { userId: user.id },
+    orderBy: { description: 'asc' }
+  });
+
+  // const todos = await prisma.todo.findMany({ orderBy: { description: 'asc' } });
+  // console.log('construido');
 
   return (
     <>

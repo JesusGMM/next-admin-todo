@@ -1,8 +1,11 @@
 'use server';
 
-import prisma from '@/lib/prisma';
-import { Todo } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
+
+import { Todo } from '@prisma/client';
+import prisma from '@/lib/prisma';
+
+import { getUserSessionServer } from '@/auth/actions/auth-actions';
 
 
 export const sleep = async (seconds: number = 0) => {
@@ -16,10 +19,9 @@ export const sleep = async (seconds: number = 0) => {
 }
 
 
-
 export const toggleTodo = async (id: string, complete: boolean): Promise<Todo> => {
 
-  await sleep(5);
+  await sleep(1);
 
   const todo = await prisma.todo.findFirst({ where: { id } });
 
@@ -37,23 +39,41 @@ export const toggleTodo = async (id: string, complete: boolean): Promise<Todo> =
 
 }
 
-
 export const addTodo = async (description: string) => {
-
   try {
+    const user = await getUserSessionServer();
 
-    const todo = await prisma.todo.create({ data: { description } })
-    revalidatePath('/dashboard/server-todos');
+    console.log(user);
+
+    const todo = await prisma.todo.create({ data: { description, userId: user!.id } });
+
+    revalidatePath("/dashboard/server-todos");
 
     return todo;
-
-  } catch (error) {
+  } catch {
     return {
-      message: `Error creando todo: ${error}`
-    }
+      message: "Error creando todo",
+    };
   }
+};
 
-}
+
+// export const addTodo = async (description: string) => {
+
+//   try {
+
+//     const todo = await prisma.todo.create({ data: { description } })
+//     revalidatePath('/dashboard/server-todos');
+
+//     return todo;
+
+//   } catch (error) {
+//     return {
+//       message: `Error creando todo: ${error}`
+//     }
+//   }
+
+// }
 
 
 export const deleteCompleted = async (): Promise<void> => {

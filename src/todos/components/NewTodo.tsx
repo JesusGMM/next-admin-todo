@@ -18,7 +18,7 @@ export const NewTodo = () => {
     e.preventDefault();
     if (description.trim().length === 0) return;
 
-    todosApi.createTodo(description);
+    await todosApi.createTodo(description);
     setDescription('');
     router.refresh();
   }
